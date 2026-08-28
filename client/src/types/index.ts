@@ -42,6 +42,7 @@ export interface DeviceCount {
 
 export interface AnalyticsPayload {
   shortCode: string;
+  shortUrl: string;
   originalUrl: string;
   totalClicks: number;
   trend: TrendPoint[];

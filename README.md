@@ -52,8 +52,7 @@ npm run dev               # http://localhost:3000
 ```bash
 cd client
 npm install
-cp .env.example .env      # VITE_API_URL defaults to http://localhost:3000
-npm run dev               # http://localhost:5173
+npm run dev               # http://localhost:5173  (proxies /api -> localhost:3000)
 ```
 
 Open **http://localhost:5173**.
@@ -90,11 +89,11 @@ plus 3 demo links and ~137 click events for `user@example.com`, and 2 blackliste
 | `PORT` | no | Default `3000`. |
 | `NODE_ENV` | no | `development` (default) \| `production` \| `test`. `production` sets `Secure` cookies. |
 
-### `client/.env`
+### client
 
-| Variable | Required | Notes |
-|---|---|---|
-| `VITE_API_URL` | yes | Always `/api`. The client calls `/api/*`; it's proxied to the API server (Vite proxy locally, `vercel.json` rewrite in prod), so the browser only ever talks to one origin. |
+No env vars. The client always calls `/api/*` on its own origin; that's proxied to the API
+server — [vite.config.ts](client/vite.config.ts) locally, [client/vercel.json](client/vercel.json)
+in production — so the browser only ever talks to one origin and the auth cookie stays first-party.
 
 ---
 
@@ -127,7 +126,7 @@ Highlights:
 | Piece | Service | Notes |
 |---|---|---|
 | API | Render | `New > Blueprint` reads `render.yaml` (rootDir `server`, migrates on build, `/health` check). Fill in the secret env vars. Note the service URL. |
-| Client | Vercel | Root Directory `client`. Env: `VITE_API_URL=/api`. Edit the destination in [`client/vercel.json`](client/vercel.json) to your Render URL. |
+| Client | Vercel | Root Directory `client`. No env vars. Edit the proxy destination in [`client/vercel.json`](client/vercel.json) to your Render URL. |
 | Postgres | Supabase | Pooled `DATABASE_URL` for the app, `DIRECT_URL` (session pooler) for migrations. |
 | Redis | Upstash | Copy the `rediss://` URL into `REDIS_URL`. |
 

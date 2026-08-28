@@ -5,7 +5,6 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 import { api } from '../lib/api';
 import { apiErrorMessage } from '../lib/apiError';
 import { queryKeys } from '../lib/queryKeys';
-import { shortUrlFor } from '../lib/format';
 import type { AnalyticsPayload, DeviceType } from '../types';
 import { ShortCodeDisplay } from '../components/ui/ShortCodeDisplay';
 import { StatCard } from '../components/ui/StatCard';
@@ -46,7 +45,7 @@ export function Analytics() {
       {data && (
         <>
           <div className="flex flex-col gap-2">
-            <ShortCodeDisplay url={shortUrlFor(data.shortCode)} />
+            <ShortCodeDisplay url={data.shortUrl} />
             <p className="truncate text-sm text-secondary">→ {data.originalUrl}</p>
           </div>
 
