@@ -1,6 +1,6 @@
 # Render Blueprint — deploys the API from server/.
-# In the Render dashboard: New > Blueprint, pick this repo. Then fill in the
-# secret env vars (marked sync:false) under the service's Environment tab.
+# Create it via  New > Blueprint  (NOT "New > Web Service", which ignores this file).
+# Then fill in the secret env vars (sync:false) under the service's Environment tab.
 services:
   - type: web
     name: shrtn-api
@@ -13,21 +13,26 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      # client and API live on different domains (vercel.app vs onrender.com)
       - key: COOKIE_SAMESITE
-        value: none # client and API are on different domains (vercel.app vs onrender.com)
+        value: none
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: BCRYPT_ROUNDS
         value: "12"
-      - key: DATABASE_URL # Supabase transaction pooler (port 6543, ?pgbouncer=true)
+      # Supabase transaction pooler: port 6543, ?pgbouncer=true
+      - key: DATABASE_URL
         sync: false
-      - key: DIRECT_URL # Supabase session pooler (port 5432) — used by prisma migrate
+      # Supabase session pooler: port 5432 (used by prisma migrate)
+      - key: DIRECT_URL
         sync: false
-      - key: REDIS_URL # Upstash rediss:// URL
+      # Upstash rediss:// URL
+      - key: REDIS_URL
         sync: false
       - key: JWT_SECRET
         sync: false
       - key: IP_HASH_SALT
         sync: false
-      - key: CLIENT_ORIGIN # the Vercel URL, e.g. https://shrtn.vercel.app
+      # the Vercel URL, e.g. https://shrtn.vercel.app
+      - key: CLIENT_ORIGIN
         sync: false
