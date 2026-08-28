@@ -84,8 +84,8 @@ plus 3 demo links and ~137 click events for `user@example.com`, and 2 blackliste
 | `JWT_EXPIRES_IN` | no | Token lifetime, default `7d`. |
 | `BCRYPT_ROUNDS` | no | Default `12`. |
 | `IP_HASH_SALT` | yes | ≥ 8 chars. Salt for the SHA-256 IP hash — raw IPs are never stored. |
-| `COOKIE_SAMESITE` | no | `strict` (default) \| `lax` \| `none`. See **Deploy** below. |
-| `CLIENT_ORIGIN` | yes | Frontend origin, for CORS. `http://localhost:5173` in dev. |
+| `COOKIE_SAMESITE` | no | `strict` (default) \| `lax` \| `none`. Keep `strict` — the client proxies the API (below), so it's always same-site. |
+| `CLIENT_ORIGIN` | yes | Frontend origin, for CORS. `http://localhost:5173` in dev, the Vercel URL in prod. A trailing slash is stripped automatically. |
 | `PORT` | no | Default `3000`. |
 | `NODE_ENV` | no | `development` (default) \| `production` \| `test`. `production` sets `Secure` cookies. |
 
@@ -93,7 +93,7 @@ plus 3 demo links and ~137 click events for `user@example.com`, and 2 blackliste
 
 | Variable | Required | Notes |
 |---|---|---|
-| `VITE_API_URL` | yes | Base URL of the API. `http://localhost:3000` in dev. |
+| `VITE_API_URL` | yes | Always `/api`. The client calls `/api/*`; it's proxied to the API server (Vite proxy locally, `vercel.json` rewrite in prod), so the browser only ever talks to one origin. |
 
 ---
 
@@ -125,19 +125,19 @@ Highlights:
 
 | Piece | Service | Notes |
 |---|---|---|
-| Client | Vercel | Set `VITE_API_URL` to the deployed API URL. Build: `npm run build`, output `dist/`. |
-| API | Railway or Render | Build `npm run build`, start `npm start`. Set all `server/.env` vars. Run `npx prisma migrate deploy` on release. |
-| Postgres | Supabase | Use the pooled `DATABASE_URL` for the app and `DIRECT_URL` for migrations. |
+| API | Render | `New > Blueprint` reads `render.yaml` (rootDir `server`, migrates on build, `/health` check). Fill in the secret env vars. Note the service URL. |
+| Client | Vercel | Root Directory `client`. Env: `VITE_API_URL=/api`. Edit the destination in [`client/vercel.json`](client/vercel.json) to your Render URL. |
+| Postgres | Supabase | Pooled `DATABASE_URL` for the app, `DIRECT_URL` (session pooler) for migrations. |
 | Redis | Upstash | Copy the `rediss://` URL into `REDIS_URL`. |
 
-**Cookies across domains.** The session cookie is `SameSite=strict` by default, which only works
-when the client and API share a site (e.g. local dev, or `app.example.com` + `api.example.com`).
-If you deploy the client and API on unrelated domains (e.g. `*.vercel.app` + `*.railway.app`),
-set `COOKIE_SAMESITE=none` on the API — the code then also forces `Secure`, so both sides must be
-HTTPS. Serving both under one registrable domain and keeping `strict` is the more secure option.
+**Same-origin by proxy.** `vercel.app` and `onrender.com` are different sites, so a cross-site
+auth cookie would be blocked by most browsers. Instead the client only ever calls its own origin
+(`/api/*`) and `client/vercel.json` rewrites that to the Render service. The cookie is first-party,
+there's no CORS in the browser, and `SameSite=strict` just works. The one hardcoded value is the
+Render URL in `vercel.json` — update it if you rename the service.
 
-**Also on the API host:** set `NODE_ENV=production`, `CLIENT_ORIGIN` to the exact client origin,
-and a strong `JWT_SECRET` / `IP_HASH_SALT`.
+**On Render:** set `NODE_ENV=production`, `CLIENT_ORIGIN` to the Vercel URL, a strong `JWT_SECRET`
+and `IP_HASH_SALT`, plus `DATABASE_URL` / `DIRECT_URL` / `REDIS_URL`. Leave `COOKIE_SAMESITE` unset.
 
 ---
 

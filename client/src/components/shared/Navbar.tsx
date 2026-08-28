@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { LogOut } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { api } from '../../lib/api';
@@ -8,12 +9,15 @@ export function Navbar() {
   const user = useAuthStore((s) => s.user);
   const clearUser = useAuthStore((s) => s.clearUser);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const logout = async () => {
     try {
       await api.post('/auth/logout');
     } finally {
       clearUser();
+      // Drop cached authed queries so nothing refetches, 401s, and bounces to /login.
+      queryClient.clear();
       navigate('/');
     }
   };
