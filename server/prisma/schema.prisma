@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  banned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  shortUrls ShortUrl[]
+
+  @@index([email])
+}
+
+model ShortUrl {
+  id          String    @id @default(cuid())
+  shortCode   String    @unique
+  originalUrl String
+  userId      String?
+  expiresAt   DateTime?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  user   User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  clicks ClickEvent[]
+
+  @@index([shortCode])
+  @@index([userId])
+}
+
+model ClickEvent {
+  id         String     @id @default(cuid())
+  shortUrlId String
+  ipHash     String
+  userAgent  String?
+  referrer   String?
+  deviceType DeviceType @default(UNKNOWN)
+  createdAt  DateTime   @default(now())
+
+  shortUrl ShortUrl @relation(fields: [shortUrlId], references: [id], onDelete: Cascade)
+
+  @@index([shortUrlId])
+  @@index([shortUrlId, createdAt])
+}
+
+model Blacklist {
+  id        String   @id @default(cuid())
+  domain    String   @unique
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@index([domain])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum DeviceType {
+  MOBILE
+  DESKTOP
+  BOT
+  UNKNOWN
+}
