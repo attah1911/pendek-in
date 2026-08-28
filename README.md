@@ -1,4 +1,4 @@
-# shrtn — URL Shortener + Analytics Dashboard
+# pendek-in — URL Shortener + Analytics Dashboard
 
 A full-stack URL shortener with per-user click analytics, custom aliases, expiry dates,
 Redis-backed rate limiting, a domain blacklist, and an admin control panel. Guests can
@@ -64,7 +64,7 @@ Open **http://localhost:5173**.
 
 | Email | Password | Role |
 |---|---|---|
-| `admin@shrtn.io` | `adminpassword` | ADMIN |
+| `admin@pendek-in.app` | `adminpassword` | ADMIN |
 | `user@example.com` | `userpassword` | USER |
 
 plus 3 demo links and ~137 click events for `user@example.com`, and 2 blacklisted domains.

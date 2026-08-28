@@ -47,9 +47,9 @@ async function main(): Promise<void> {
   await prisma.shortUrl.deleteMany({ where: { shortCode: { in: SAMPLE_CODES } } });
 
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@shrtn.io' },
+    where: { email: 'admin@pendek-in.app' },
     update: { role: 'ADMIN', banned: false },
-    create: { email: 'admin@shrtn.io', password: await bcrypt.hash('adminpassword', BCRYPT_ROUNDS), role: 'ADMIN' },
+    create: { email: 'admin@pendek-in.app', password: await bcrypt.hash('adminpassword', BCRYPT_ROUNDS), role: 'ADMIN' },
     select: { id: true },
   });
 

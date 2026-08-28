@@ -21,7 +21,7 @@ export function Navbar() {
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-6">
       <Link to="/" className="font-display text-lg font-bold text-primary">
-        shrtn<span className="text-accent">.</span>
+        pendek<span className="text-accent">-in</span>
       </Link>
       <nav className="flex items-center gap-2">
         {user ? (

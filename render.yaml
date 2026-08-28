@@ -3,7 +3,7 @@
 # Then fill in the secret env vars (sync:false) under the service's Environment tab.
 services:
   - type: web
-    name: shrtn-api
+    name: pendek-in-api
     runtime: node
     rootDir: server
     plan: free
@@ -34,6 +34,6 @@ services:
         sync: false
       - key: IP_HASH_SALT
         sync: false
-      # the Vercel URL, e.g. https://shrtn.vercel.app
+      # the Vercel URL, e.g. https://pendek-in.vercel.app
       - key: CLIENT_ORIGIN
         sync: false
