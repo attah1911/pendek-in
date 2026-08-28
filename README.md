@@ -86,6 +86,7 @@ plus 3 demo links and ~137 click events for `user@example.com`, and 2 blackliste
 | `IP_HASH_SALT` | yes | ≥ 8 chars. Salt for the SHA-256 IP hash — raw IPs are never stored. |
 | `COOKIE_SAMESITE` | no | `strict` (default) \| `lax` \| `none`. Keep `strict` — the client proxies the API (below), so it's always same-site. |
 | `CLIENT_ORIGIN` | yes | Frontend origin, for CORS. `http://localhost:5173` in dev, the Vercel URL in prod. A trailing slash is stripped automatically. |
+| `SHORT_URL_BASE` | no | Origin shown in generated short links (e.g. `https://pendek-in-api.onrender.com`). Unset → derived from the request. |
 | `PORT` | no | Default `3000`. |
 | `NODE_ENV` | no | `development` (default) \| `production` \| `test`. `production` sets `Secure` cookies. |
 

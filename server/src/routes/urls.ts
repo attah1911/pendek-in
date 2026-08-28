@@ -2,6 +2,7 @@ import { Router, type RequestHandler } from 'express';
 import { optionalAuth, requireAuth } from '../middlewares/auth';
 import { shortenGuestLimiter, shortenUserLimiter } from '../middlewares/rateLimiter';
 import { createUrlSchema, urlIdParamSchema } from '../validators/urls';
+import { env } from '../config/env';
 import * as urlService from '../services/urlService';
 
 export const urlsRouter = Router();
@@ -21,8 +22,8 @@ urlsRouter.post('/', optionalAuth, pickShortenLimiter, async (req, res) => {
     userId: req.user?.id,
   });
 
-  const shortUrl = `${req.protocol}://${req.get('host')}/${created.shortCode}`;
-  res.status(201).json({ shortUrl, shortCode: created.shortCode });
+  const base = env.SHORT_URL_BASE ?? `${req.protocol}://${req.get('host')}`;
+  res.status(201).json({ shortUrl: `${base}/${created.shortCode}`, shortCode: created.shortCode });
 });
 
 urlsRouter.get('/', requireAuth, async (req, res) => {

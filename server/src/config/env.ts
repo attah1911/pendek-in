@@ -17,6 +17,13 @@ const envSchema = z.object({
     .string()
     .url()
     .transform((s) => s.replace(/\/+$/, '')),
+  // Origin shown in generated short links (e.g. https://pendek-in-api.onrender.com).
+  // Unset → derived from the incoming request, which behind a proxy is the API host.
+  SHORT_URL_BASE: z
+    .string()
+    .url()
+    .transform((s) => s.replace(/\/+$/, ''))
+    .optional(),
   PORT: z.coerce.number().int().positive().default(3000),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 });

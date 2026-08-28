@@ -37,3 +37,7 @@ services:
       # the Vercel URL, e.g. https://pendek-in.vercel.app
       - key: CLIENT_ORIGIN
         sync: false
+      # domain shown in generated short links — set to this service's own URL,
+      # e.g. https://pendek-in-api.onrender.com (optional; omit to derive from the request)
+      - key: SHORT_URL_BASE
+        sync: false
