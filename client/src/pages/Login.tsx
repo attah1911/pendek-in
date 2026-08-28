@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
+import { ArrowLeft } from 'lucide-react';
 import { api } from '../lib/api';
 import { apiErrorMessage } from '../lib/apiError';
 import { useAuthStore } from '../store/authStore';
@@ -36,7 +37,13 @@ export function Login() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-bg px-4">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-bg px-4">
+      <Link to="/" className="absolute left-3 top-3">
+        <Button variant="ghost">
+          <ArrowLeft className="h-4 w-4" />
+          Back to home
+        </Button>
+      </Link>
       <Link to="/" className="mb-8 font-display text-lg font-bold text-primary">
         pendek<span className="text-accent">-in</span>
       </Link>

@@ -12,7 +12,11 @@ const envSchema = z.object({
   // 'strict' works when the client and API are same-site (localhost, or app.x.com + api.x.com).
   // Cross-domain deploys (Vercel client + Railway API) need 'none' so the auth cookie is sent.
   COOKIE_SAMESITE: z.enum(['strict', 'lax', 'none']).default('strict'),
-  CLIENT_ORIGIN: z.string().url(),
+  // An Origin header never has a trailing slash — strip one if it's in the env value, or CORS won't match.
+  CLIENT_ORIGIN: z
+    .string()
+    .url()
+    .transform((s) => s.replace(/\/+$/, '')),
   PORT: z.coerce.number().int().positive().default(3000),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 });
