@@ -13,11 +13,11 @@ export function Home() {
   if (user) return <Navigate to="/dashboard" replace />;
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
+    <div className="flex flex-col min-h-screen bg-bg">
       <Navbar />
       <main className="mx-auto flex w-full max-w-[640px] flex-1 flex-col justify-center gap-5 px-4 pb-24">
         <div>
-          <h1 className="font-display text-2xl font-bold text-primary">Shorten anything.</h1>
+          <h1 className="text-2xl font-bold font-display text-primary">Shorten anything.</h1>
           <p className="mt-1 text-secondary">One clean link. Real analytics.</p>
         </div>
 
@@ -25,7 +25,7 @@ export function Home() {
 
         {shortUrl && <ShortCodeDisplay url={shortUrl} />}
 
-        <p className="text-xs text-muted">5 free shortens per day · Sign up for more</p>
+        <p className="text-xs text-muted">5 free shortens per day · Sign up for more · Sign in for more features</p>
       </main>
     </div>
   );
