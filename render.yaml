@@ -3,7 +3,7 @@
 # Then fill in the secret env vars (sync:false) under the service's Environment tab.
 services:
   - type: web
-    name: pendek-in-api
+    name: pendek-in
     runtime: node
     rootDir: server
     plan: free
