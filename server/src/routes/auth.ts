@@ -12,14 +12,18 @@ export const authRouter = Router();
 
 const TOKEN_COOKIE = 'token';
 
-// ponytail: maxAge pinned to the JWT_EXPIRES_IN default (7d); if you change that env var, update this too.
-const cookieOptions: CookieOptions = {
+// Attributes shared by the set- and clear-cookie calls — they must match or the browser
+// keeps the cookie. maxAge belongs only on the set call: res.clearCookie ignores it (and
+// warns) since its job is to expire the cookie immediately.
+const cookieBase: CookieOptions = {
   httpOnly: true,
   // sameSite:'none' is only honoured with Secure — force it on regardless of NODE_ENV.
   secure: isProd || env.COOKIE_SAMESITE === 'none',
   sameSite: env.COOKIE_SAMESITE,
-  maxAge: 7 * 24 * 60 * 60 * 1000,
 };
+
+// ponytail: maxAge pinned to the JWT_EXPIRES_IN default (7d); if you change that env var, update this too.
+const cookieOptions: CookieOptions = { ...cookieBase, maxAge: 7 * 24 * 60 * 60 * 1000 };
 
 const invalidCredentials = new AppError(401, 'INVALID_CREDENTIALS', 'Invalid email or password');
 
@@ -59,7 +63,7 @@ authRouter.post('/login', authLimiter, async (req, res) => {
 });
 
 authRouter.post('/logout', (_req, res) => {
-  res.clearCookie(TOKEN_COOKIE, cookieOptions);
+  res.clearCookie(TOKEN_COOKIE, cookieBase);
   res.json({ message: 'Logged out' });
 });
 
