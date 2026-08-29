@@ -28,7 +28,10 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 });
 
-const parsed = envSchema.safeParse(process.env);
+// An empty value (KEY= from a copied .env.example) is treated as unset, so a default or
+// .optional() applies instead of failing Zod's .url()/.enum() check on an empty string.
+const present = Object.fromEntries(Object.entries(process.env).filter(([, v]) => v !== ''));
+const parsed = envSchema.safeParse(present);
 
 if (!parsed.success) {
   const missing = parsed.error.issues.map((i) => `  ${i.path.join('.')}: ${i.message}`).join('\n');
