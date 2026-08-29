@@ -85,7 +85,7 @@ plus 3 demo links and ~137 click events for `user@example.com`, and 2 blackliste
 | `IP_HASH_SALT` | yes | ≥ 8 chars. Salt for the SHA-256 IP hash — raw IPs are never stored. |
 | `COOKIE_SAMESITE` | no | `strict` (default) \| `lax` \| `none`. Keep `strict` — the client proxies the API (below), so it's always same-site. |
 | `CLIENT_ORIGIN` | yes | Frontend origin, for CORS. `http://localhost:5173` in dev, the Vercel URL in prod. A trailing slash is stripped automatically. |
-| `SHORT_URL_BASE` | no | Origin shown in generated short links (e.g. `https://pendek-in-api.onrender.com`). Unset → derived from the request. |
+| `SHORT_URL_BASE` | no | Origin shown in generated short links (e.g. `https://pendek-in.onrender.com`). Unset → derived from the request. |
 | `PORT` | no | Default `3000`. |
 | `NODE_ENV` | no | `development` (default) \| `production` \| `test`. `production` sets `Secure` cookies. |
 
@@ -112,7 +112,7 @@ Highlights:
 - **Blacklist** — checked inside `urlService.create` (cannot be bypassed by a route). Matches the
   submitted hostname *and its parent domains*, so blacklisting `evil.com` also blocks `x.evil.com`.
 - **URL hygiene** — only `http`/`https` URLs are accepted (no `javascript:` / `data:`); custom
-  aliases are restricted to `[a-z0-9-]{3,32}` and a reserved-word list.
+  aliases are restricted to `[a-zA-Z0-9-]{3,32}` and a reserved-word list.
 - **Privacy** — click events store `SHA-256(ip + IP_HASH_SALT)`, never the raw IP. No password
   hash is returned by any endpoint.
 - **Headers / CORS** — Helmet defaults; CORS locked to `CLIENT_ORIGIN` with credentials.
@@ -137,7 +137,8 @@ there's no CORS in the browser, and `SameSite=strict` just works. The one hardco
 Render URL in `vercel.json` — update it if you rename the service.
 
 **On Render:** set `NODE_ENV=production`, `CLIENT_ORIGIN` to the Vercel URL, a strong `JWT_SECRET`
-and `IP_HASH_SALT`, plus `DATABASE_URL` / `DIRECT_URL` / `REDIS_URL`. Leave `COOKIE_SAMESITE` unset.
+and `IP_HASH_SALT`, `DATABASE_URL` / `DIRECT_URL` / `REDIS_URL`, and `SHORT_URL_BASE` to this
+service's own URL. Leave `COOKIE_SAMESITE` unset.
 
 ---
 

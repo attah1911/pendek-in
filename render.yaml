@@ -14,9 +14,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      # client and API live on different domains (vercel.app vs onrender.com)
-      - key: COOKIE_SAMESITE
-        value: none
+      # COOKIE_SAMESITE left unset (→ 'strict'): the browser only ever hits the Vercel
+      # origin, /api/* is proxied to Render, so the auth cookie is first-party.
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: BCRYPT_ROUNDS
