@@ -77,23 +77,26 @@ export function ShortenForm({ onCreated, withOptions = false }: ShortenFormProps
       </div>
 
       {withOptions && (
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Input
-            placeholder="custom alias (optional)"
-            value={alias}
-            onChange={(e) => setAlias(e.target.value)}
-            containerClassName="flex-1"
-            aria-label="Custom alias"
-          />
-          <Input
-            type="date"
-            min={minExpiryDate()}
-            value={expiry}
-            onChange={(e) => setExpiry(e.target.value)}
-            containerClassName="flex-1"
-            aria-label="Expiry date"
-          />
-        </div>
+        <>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              label="Custom alias"
+              placeholder="my-link"
+              value={alias}
+              onChange={(e) => setAlias(e.target.value)}
+              containerClassName="flex-1"
+            />
+            <Input
+              label="Expiry date"
+              type="date"
+              min={minExpiryDate()}
+              value={expiry}
+              onChange={(e) => setExpiry(e.target.value)}
+              containerClassName="flex-1"
+            />
+          </div>
+          <p className="text-xs text-muted">Both optional. After the expiry date the link stops working.</p>
+        </>
       )}
 
       {mutation.isError && <p className="text-xs text-danger">{apiErrorMessage(mutation.error)}</p>}

@@ -8,6 +8,7 @@ import { queryKeys } from '../lib/queryKeys';
 import { formatDate } from '../lib/format';
 import type { AggregateStats, ShortUrl } from '../types';
 import { ShortenForm } from '../components/shared/ShortenForm';
+import { CopyButton } from '../components/ui/CopyButton';
 import { ShortCodeDisplay } from '../components/ui/ShortCodeDisplay';
 import { StatCard } from '../components/ui/StatCard';
 import { Badge } from '../components/ui/Badge';
@@ -83,7 +84,16 @@ export function Dashboard() {
             const status = urlStatus(u);
             return (
               <Tr key={u.id}>
-                <Td className="font-mono text-accent">{u.shortCode}</Td>
+                <Td className="font-mono text-accent">
+                  <div className="flex items-center gap-2">
+                    {u.shortCode}
+                    <CopyButton
+                      value={u.shortUrl}
+                      label={`Copy link for ${u.shortCode}`}
+                      className="text-secondary hover:text-primary"
+                    />
+                  </div>
+                </Td>
                 <Td className="max-w-[280px] truncate text-secondary">{u.originalUrl}</Td>
                 <Td>{u.clickCount}</Td>
                 <Td className="whitespace-nowrap text-muted">{formatDate(u.createdAt)}</Td>

@@ -1,5 +1,6 @@
 export type Role = 'USER' | 'ADMIN';
 export type DeviceType = 'MOBILE' | 'DESKTOP' | 'BOT' | 'UNKNOWN';
+export type TrendRange = 'week' | 'month' | 'year';
 
 export interface User {
   id: string;
@@ -10,6 +11,7 @@ export interface User {
 export interface ShortUrl {
   id: string;
   shortCode: string;
+  shortUrl: string;
   originalUrl: string;
   expiresAt: string | null;
   active: boolean;

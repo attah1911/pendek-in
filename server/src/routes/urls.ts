@@ -27,7 +27,7 @@ urlsRouter.post('/', optionalAuth, pickShortenLimiter, async (req, res) => {
 
 urlsRouter.get('/', requireAuth, async (req, res) => {
   const urls = await urlService.listByUser(req.user!.id);
-  res.json({ urls });
+  res.json({ urls: urls.map((u) => ({ ...u, shortUrl: shortUrlFor(req, u.shortCode) })) });
 });
 
 urlsRouter.delete('/:id', requireAuth, async (req, res) => {

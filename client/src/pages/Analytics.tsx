@@ -1,11 +1,12 @@
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { api } from '../lib/api';
 import { apiErrorMessage } from '../lib/apiError';
 import { queryKeys } from '../lib/queryKeys';
-import type { AnalyticsPayload, DeviceType } from '../types';
+import type { AnalyticsPayload, DeviceType, TrendRange } from '../types';
 import { ShortCodeDisplay } from '../components/ui/ShortCodeDisplay';
 import { StatCard } from '../components/ui/StatCard';
 import { Card } from '../components/ui/Card';
@@ -19,18 +20,29 @@ const DEVICE_CARDS: Array<{ type: DeviceType; label: string }> = [
   { type: 'BOT', label: 'Bot' },
 ];
 
+const RANGES: Array<{ value: TrendRange; label: string }> = [
+  { value: 'week', label: 'Week' },
+  { value: 'month', label: 'Month' },
+  { value: 'year', label: 'Year' },
+];
+
 export function Analytics() {
   const { shortCode = '' } = useParams();
+  const [range, setRange] = useState<TrendRange>('month');
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: queryKeys.analytics(shortCode),
-    queryFn: async () => (await api.get<AnalyticsPayload>(`/analytics/${shortCode}`)).data,
+    queryKey: queryKeys.analytics(shortCode, range),
+    queryFn: async () =>
+      (await api.get<AnalyticsPayload>(`/analytics/${shortCode}`, { params: { range } })).data,
     enabled: shortCode.length > 0,
+    // Keep the current chart on screen while a new range loads instead of flashing back to the spinner.
+    placeholderData: keepPreviousData,
   });
 
   const pct = (n: number): string => (data?.totalClicks ? `${Math.round((n / data.totalClicks) * 100)}%` : '0%');
   const deviceCount = (type: DeviceType): number => data?.devices.find((d) => d.deviceType === type)?.count ?? 0;
   const maxReferrer = Math.max(1, ...(data?.referrers.map((r) => r.count) ?? [1]));
+  const trendTotal = data?.trend.reduce((sum, p) => sum + p.count, 0) ?? 0;
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
@@ -50,9 +62,30 @@ export function Analytics() {
           </div>
 
           <Card>
-            <div className="flex items-baseline justify-between">
-              <h2 className="text-lg font-medium text-primary">Click trend</h2>
-              <span className="text-sm text-secondary">{data.totalClicks} total · last 30 days</span>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h2 className="text-lg font-medium text-primary">Click trend</h2>
+                <p className="text-xs text-secondary">
+                  {trendTotal} {trendTotal === 1 ? 'click' : 'clicks'} in the selected range
+                </p>
+              </div>
+              <div className="flex gap-1">
+                {RANGES.map((r) => (
+                  <button
+                    key={r.value}
+                    type="button"
+                    onClick={() => setRange(r.value)}
+                    aria-pressed={range === r.value}
+                    className={`rounded-sm px-2.5 py-1 text-xs transition-colors ${
+                      range === r.value
+                        ? 'bg-accent-dim text-accent'
+                        : 'text-secondary hover:bg-surface-2 hover:text-primary'
+                    }`}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="mt-4 h-64">
               <ResponsiveContainer width="100%" height="100%">

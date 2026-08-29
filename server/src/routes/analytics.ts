@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from '../middlewares/auth';
-import { shortCodeParamSchema } from '../validators/urls';
+import { analyticsQuerySchema, shortCodeParamSchema } from '../validators/urls';
 import { shortUrlFor } from '../lib/shortUrl';
 import * as analyticsService from '../services/analyticsService';
 
@@ -13,6 +13,7 @@ analyticsRouter.get('/summary', requireAuth, async (req, res) => {
 
 analyticsRouter.get('/:shortCode', requireAuth, async (req, res) => {
   const { shortCode } = shortCodeParamSchema.parse(req.params);
-  const data = await analyticsService.getUrlAnalytics(shortCode, req.user!);
+  const { range } = analyticsQuerySchema.parse(req.query);
+  const data = await analyticsService.getUrlAnalytics(shortCode, req.user!, range);
   res.json({ ...data, shortUrl: shortUrlFor(req, data.shortCode) });
 });

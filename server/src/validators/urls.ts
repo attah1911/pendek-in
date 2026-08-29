@@ -26,6 +26,10 @@ export const shortCodeParamSchema = z.object({
   shortCode: z.string().min(3).max(32),
 });
 
+export const analyticsQuerySchema = z.object({
+  range: z.enum(['week', 'month', 'year']).default('month'),
+});
+
 export const urlIdParamSchema = z.object({
   id: z.string().min(1),
 });

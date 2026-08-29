@@ -5,6 +5,9 @@ import { AppError } from '../lib/errors';
 const DAY_MS = 86_400_000;
 const TREND_DAYS = 30;
 
+export type TrendRange = 'week' | 'month' | 'year';
+const RANGE_DAYS: Record<TrendRange, number> = { week: 7, month: 30, year: 365 };
+
 interface TrendPoint {
   date: string;
   count: number;
@@ -28,15 +31,16 @@ export function bucketClicksByDay(timestamps: Date[], days = TREND_DAYS, now: Da
   return out;
 }
 
-export async function getClickTrend(shortUrlId: string): Promise<TrendPoint[]> {
-  const since = new Date(Date.now() - TREND_DAYS * DAY_MS);
+export async function getClickTrend(shortUrlId: string, range: TrendRange): Promise<TrendPoint[]> {
+  const days = RANGE_DAYS[range];
+  const since = new Date(Date.now() - days * DAY_MS);
   const rows = await prisma.clickEvent.findMany({
     where: { shortUrlId, createdAt: { gte: since } },
     select: { createdAt: true },
   });
   return bucketClicksByDay(
     rows.map((r) => r.createdAt),
-    TREND_DAYS,
+    days,
   );
 }
 
@@ -85,7 +89,11 @@ export async function getAggregate(userId: string): Promise<{
   };
 }
 
-export async function getUrlAnalytics(shortCode: string, requester: { id: string; role: Role }): Promise<{
+export async function getUrlAnalytics(
+  shortCode: string,
+  requester: { id: string; role: Role },
+  trendRange: TrendRange,
+): Promise<{
   shortCode: string;
   originalUrl: string;
   totalClicks: number;
@@ -103,7 +111,7 @@ export async function getUrlAnalytics(shortCode: string, requester: { id: string
   }
 
   const [trend, referrers, devices] = await Promise.all([
-    getClickTrend(url.id),
+    getClickTrend(url.id, trendRange),
     getTopReferrers(url.id),
     getDeviceBreakdown(url.id),
   ]);
