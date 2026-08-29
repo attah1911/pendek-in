@@ -61,6 +61,7 @@ export function Dashboard() {
 
       <div className="flex flex-col gap-3 rounded-md border border-border bg-surface p-4">
         <ShortenForm
+          withOptions
           onCreated={(r) => {
             setLastShortUrl(r.shortUrl);
             invalidate();
